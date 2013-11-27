@@ -17,18 +17,18 @@
   ],
   "main": "./lib/passport-saml",
   "dependencies": {
-    "passport": "0.1.x",
-    "zlib": "1.0.x",
+    "passport": "0.1.17",
+    "zlib": "1.0.5",
     "xml2js": "0.2.0",
-    "xml-crypto": "0.0.x",
-    "xmldom": "0.1.x"
+    "xml-crypto": "0.0.21",
+    "xmldom": "0.1.16"
   },
   "devDependencies": {
-    "express": "2.5.x",
-    "ejs": "0.7.x",
+    "express": "3.3.4",
+    "ejs": "0.7.2",
     "jshint": "*"
   },
   "engines": {
-    "node": ">= 0.6.0"
+    "node": ">= 0.10.3"
   }
 }

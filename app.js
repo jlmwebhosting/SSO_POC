@@ -38,14 +38,19 @@ passport.use(new SamlStrategy(
   {
       path: '/saml/acs',
       entryPoint: 'https://fedpocv1.corp.ebay.com/idp/SSO.saml2',
-      issuer: 'https://idealabdev.ebay.com',
+      issuer: 'https://ciodev.ebay.com', // Depends on each project
       protocol: 'https://',
       logging:true,
-      callbackUrl:'https://l-sjn-00544930.corp.ebay.com/saml/acs'
+      callbackUrl:'https://l-sjn-00535715.corp.ebay.com/saml/acs',  //https://hostname/saml/acs
+      // Below Configs is mandatory and should have proper values, especially privateCert should be proper
+      cert:"MIIDjjCCAnagAwIBAgIGAT2JnumBMA0GCSqGSIb3DQEBBQUAMIGHMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxEjAQBgNVBAoTCWVCYXkgSW5jLjEUMBIGA1UECxMLSVQgU2VydmljZXMxJjAkBgNVBAMTHXNzb3NpZ25mZWRwb2N2MS5jb3JwLmViYXkuY29tMB4XDTEzMDMyMDIxMDUyNVoXDTE1MDMyMDIxMDUyNVowgYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMREwDwYDVQQHEwhTYW4gSm9zZTESMBAGA1UEChMJZUJheSBJbmMuMRQwEgYDVQQLEwtJVCBTZXJ2aWNlczEmMCQGA1UEAxMdc3Nvc2lnbmZlZHBvY3YxLmNvcnAuZWJheS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWH7K2M47F957/XqfkW4vMMjuiXbZ3fDUBjT8MOVN6egcBwbFD/qmsrNABWIeKQVR0bmHIyuIgrk+faSFvhFifUrNGEr7oye7tEca86yZiAC+MCwmtydDIHZRvCQM6+NgsNsRH7C8j03Rbg6QtmLOqi6SRcrdkWd3W5dY8cu9+12LMkqfWs6CnxHsijfU+7ewtWoWRX6MGAL2V/L1j0zu4tfOF1hJFWUrpgc2IdUeA5dE1eRhTQGZqehPhkQGBEObrOJJKlf8YNvRwZry2UJmfr0C0VZmPgMy2xs6xQeHajEBr0mRhSLc8D+yxlfrmZWWDK/tgTWN1ISupYFyjugifAgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAAnadAELq7fpjImlzFbOHOan9Oo5RtCwXSdbksx91UOkcSO3HIAWgHC3enRh94Beb7x2tOmRO54RomtJGE+DB/S06UnEkJ2JMDIMGcqxIntHmBqp6c3dn7GtBJ6WO6d5ds6KpwMn4xmmBMSDdknblxlOUzMq/KMM0WqVxRX1Lof4oryNMMhrii7AOMs4p/9YczKRtsX7YQi93MpTvkvZPjlCuWWRAB42Z7FUiR5CTGVv8w6GMZt4MItQOHKEEOmL6olo0QILibmEHzdgiSl2c9SltdYEymT11/Ex+TN5jC+CAZZlm7LB7cB9cGYIuzJl2PVWn3oYi3c7rPrwIqooxkU=",
+      privateCert: fs.readFileSync('./projectprivatekey.pem', 'utf-8'),  //need to generate key using openssl and put it in server
+      encryptedSAML:true,
+      identifierFormat:"urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
 },
   function(profile, done) {
     console.log("Auth with", profile);
-    if (!profile.samlClaims.Email) {
+    if (!profile.Email) {
       return done(new Error("No email found"), null);
     }
     // asynchronous verification, for effect...
@@ -57,9 +62,9 @@ passport.use(new SamlStrategy(
         if (!user) {
           // "Auto-registration"
             console.log("Register")
-          users.push(profile.samlClaims);
+          users.push(profile);
           console.log(JSON.stringify(users))
-          return done(null, profile.samlClaims);
+          return done(null, profile);
         }
         return done(null, user);
       })
@@ -67,7 +72,7 @@ passport.use(new SamlStrategy(
   }
 ));
 
-var app = express.createServer();
+var app = express();
 
 // configure Express
 app.configure(function() {
@@ -81,11 +86,12 @@ app.configure(function() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);
-  app.use(express.static(__dirname + '/../../public'));
+  app.use(express.static(__dirname + '/public'));
 });
 
 
-app.get('/', function(req, res){
+app.get('/', ensureAuthenticated, function(req, res){
+    console.log(req.user);
   res.render('index', { user: req.user });
 });
 
@@ -120,8 +126,8 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-app.listen(4000, function () {
-  console.log("Server listening in http://localhost:3000");
+app.listen(4567, function () {
+  console.log("Server listening in http://localhost:4567");
 });
 
 // Simple route middleware to ensure user is authenticated.
