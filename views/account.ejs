@@ -1,2 +1,26 @@
-<p>Username: <%= user.Corpid %></p>
-<p>Email: <%= user.Email %></p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Passport-SAML Example</title>
+</head>
+<body>
+<% if (!user) { %>
+<p>
+    <a href="/">Home</a> |
+    <a href="/login">Log In</a>
+<h2>Welcome! Please log in.</h2>
+</p>
+<% } else { %>
+<p>
+    <a href="/">Home</a> |
+    <a href="/account">Account</a>
+    <p>Username: <%= user.Corpid %></p>
+    <p>Email: <%= user.Email %></p>
+</p>
+<% } %>
+
+</body>
+</html>
+
+
+

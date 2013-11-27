@@ -1,5 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Passport-SAML Example</title>
+</head>
+<body>
 <% if (!user) { %>
-<h2>Welcome! Please log in.</h2>
+<p>
+    <a href="/">Home</a> |
+    <a href="/login">Log In</a>
+    <h2>Welcome! Please log in.</h2>
+</p>
 <% } else { %>
-<h2>Hello, <%= user.FirstName %><%= user.LastName %>.</h2>
+<p>
+    <a href="/">Home</a> |
+    <a href="/account">Account</a>
+    <h2>Hello, <%= user.FirstName %><%= user.LastName %>.</h2>
+</p>
 <% } %>
+
+</body>
+</html>
