@@ -23,7 +23,7 @@
     "Michael Bosworth"
   ],
   "dependencies": {
-    "passport": "0.1.17",
+    "passport": "~0.2.0",
     "passport-saml-encrypted" : "git://github.com/lmarkus/passport-saml-encrypted.git",
     "zlib": "1.0.5",
     "xml2js": "0.2.0",
