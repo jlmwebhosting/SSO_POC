@@ -1,7 +1,7 @@
 var express = require('express')
   , passport = require('passport')
   , util = require('util')
-  , SamlStrategy = require('./lib/passport-saml-patched').Strategy
+  , SamlStrategy = require('passport-saml-encrypted').Strategy
   , fs = require('fs')
   , https=require('https')
   , http=require('http');
